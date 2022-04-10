@@ -41,7 +41,6 @@ to |
 from |
 behind |
 above |
-below |
 between |
 below		{ printf("%s: is a preposition\n", yytext); }
 
@@ -74,7 +73,8 @@ they		{ printf("%s: in a pronoun\n", yytext); }
 
 %%
 
-main()
+int main()
 {
 	yylex();
+    return 0;
 }

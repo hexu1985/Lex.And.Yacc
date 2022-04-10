@@ -1,64 +1,64 @@
 %{
 /*
- * Word recognizer with a symbol table.
+ * We now build a lexical analyzer to be used by a higher-level parser.
  */
 
-enum {
-	LOOKUP = 0, /* default - looking rather than defining. */
-	VERB,
-	ADJ,
-	ADV,
-	NOUN,
-	PREP,
-	PRON,
-	CONJ
-};
+#include "ch1-05y.h"	/* token codes from the parser */
+
+#define LOOKUP 0 /* default - not a defined word type. */
 
 int state; 
 
-int add_word(int type, char *word);
 int lookup_word(char *word);
+int add_word(int type, char *word);
+
 %}
+
 %%
-\n	{ state = LOOKUP; }	/* end of line, return to default state */
+
+\n	{ state = LOOKUP; }
+
+\.\n	{	state = LOOKUP;
+		return 0; /* end of sentence */
+	}
 
 ^verb	{ state = VERB; }
-^adj	{ state = ADJ; }
-^adv	{ state = ADV; }
+^adj	{ state = ADJECTIVE; }
+^adv	{ state = ADVERB; }
 ^noun	{ state = NOUN; }
-^prep	{ state = PREP; }
-^pron	{ state = PRON; }
-^conj	{ state = CONJ; }
+^prep	{ state = PREPOSITION; }
+^pron	{ state = PRONOUN; }
+^conj	{ state = CONJUNCTION; }
 
-[a-zA-Z]+  {
-		/* a normal word, define it or look it up */
+[a-zA-Z]+ { 
 	     if(state != LOOKUP) {
-	        /* define the current word */
 	     	add_word(state, yytext);
 	     } else {
 		switch(lookup_word(yytext)) {
-		case VERB: printf("%s: verb\n", yytext); break;
-		case ADJ: printf("%s: adjective\n", yytext); break;
-		case ADV: printf("%s: adverb\n", yytext); break;
-		case NOUN: printf("%s: noun\n", yytext); break;
-		case PREP: printf("%s: preposition\n", yytext); break;
-		case PRON: printf("%s: pronoun\n", yytext); break;
-		case CONJ: printf("%s: conjunction\n", yytext); break;
+		case VERB:
+		  return(VERB);
+		case ADJECTIVE:
+		  return(ADJECTIVE);
+		case ADVERB:
+		  return(ADVERB);
+		case NOUN:
+		  return(NOUN);
+		case PREPOSITION:
+		  return(PREPOSITION);
+		case PRONOUN:
+		  return(PRONOUN);
+		case CONJUNCTION:
+		  return(CONJUNCTION);
 		default:
-			printf("%s:  don't recognize\n", yytext);
-			break;
+		  printf("%s:  don't recognize\n", yytext);
+		  /* don't return, just ignore it */
 		}
             }
           }
 
-.	/* ignore anything else */ ;
+.	; 
 
 %%
-int main()
-{
-	yylex();
-}
-
 /* define a linked list of words and types */
 struct word {
 	char *word_name;
