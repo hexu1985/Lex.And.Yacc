@@ -19,10 +19,10 @@ all: $(PROGS)
 
 .PHONY: clean
 clean:
-	$(RM) $(PROGS) *.o lex.yy.c *.tab.*
+	$(RM) $(PROGS) *.o lex.yy.* *.tab.*
 	@echo "clean OK!"
 
-$(PROGS): ch1-06.l ch1-06.y ch1-06y.h
+$(PROGS): ch1-06.l ch1-06.y
 	flex ch1-06.l
 	bison -d ch1-06.y
 	gcc -c -g lex.yy.c ch1-06.tab.c
